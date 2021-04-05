@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Admin\Controllers;
 
 use App\Models\Book;
@@ -8,8 +7,14 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-
 use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use Encore\Admin\Facades\Admin;
+use Encore\Admin\Layout\Content;
+use App\Admin\Extensions\CheckRow;
+use App\Admin\Actions\Book\Replicate;
+use App\Admin\Actions\Book\Redirect;
+use App\Admin\Actions\Book\BatchReplicate;
 
 class BookController extends AdminController
 {
@@ -31,24 +36,87 @@ class BookController extends AdminController
         $grid = new Grid(new Book());
 
         $grid->column('id', __('Id'));
-        $grid->column('title')->display(function ($title, $column) {
+        // $grid->column('title')->display(function ($title, $column) {
     
-            // If the value of the status field of this column is equal to 1, directly display the title field
-            If ($this->status == 1) {
-                return $title;
-            }
+        //     // If the value of the status field of this column is equal to 1, directly display the title field
+        //     If ($this->status == 1) {
+        //         return $title;
+        //     }
             
-            // Otherwise it is displayed as editable
-            return $column->editable();
-        });
+        //     // Otherwise it is displayed as editable
+        //     return $column->editable();
+        // });
 
+        $grid->column('title')->editable();
+        
         $grid->column('author', __('Author'))->color('#ccc');
-        $grid->column('author_address', __('Author address'))->color('#008000')->popover('right');
-        $grid->column('ISBN', __('ISBN'));
+        $grid->column('author_gender');
+        $grid->column('author_address', __('Author address'))->color('#008000');
+        //$grid->column('ISBN', __('ISBN'));
+        $grid->column('ISBN')->filter('range');
         $grid->column('is_published', __('Is published'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
         $grid->paginate(10);
+
+        // Operate on the `$grid` instance
+        $grid->expandFilter();
+        $grid->filter(function($filter){
+
+            // Remove the default id filter
+            $filter->disableIdFilter();
+        
+            // Add a column filter
+           //$filter->like('title');
+            // // Multiple conditional query
+            // $filter->scope('new', 'Recently modified')
+            // ->whereDate('created_at', date('Y-m-d'));
+            $filter->contains('title');
+            $filter->between('ISBN','ISBN');
+            $filter->where(function ($query) {
+
+                $query->where('title', 'like', "%{$this->input}%")
+                    ->orWhere('author_address', 'like', "%{$this->input}%");
+            
+            }, 'Text');
+
+            $filter->where(function ($query) {
+
+                $query->whereRaw("`id` >= 40 AND `created_at` = {$this->input}");
+            
+            }, 'Text');
+        
+        });
+      
+        // $grid->actions(function ($actions) {
+        //     $actions->disableDelete();
+        //     $actions->disableEdit();
+        //     $actions->disableView();
+        // });
+
+        // $grid->actions(function ($actions) {
+
+        //     // the array of data for the current row
+        //     $actions->row;
+        
+        //     // gets the current row primary key value
+        //     $actions->getKey();
+        // });
+
+        // $grid->actions(function ($actions) {
+
+        //     // add action
+        //     $actions->append(new CheckRow($actions->getKey()));
+        // });
+        $grid->actions(function ($actions) {
+            $actions->add(new Replicate);
+            $actions->add(new Redirect);
+        });
+
+        $grid->batchActions(function ($batch) {
+            $batch->add(new BatchReplicate());
+        });
+       
         return $grid;
     }
 
@@ -60,18 +128,61 @@ class BookController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Book::findOrFail($id));
+        // $show = new Show(Book::findOrFail($id));
 
-        $show->field('id', __('Id'));
-        $show->field('title', __('Title'));
-        $show->field('author', __('Author'));
-        $show->field('author_address', __('Author address'));
-        $show->field('ISBN', __('ISBN'));
-        $show->field('is_published', __('Is published'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
+        // $show->field('id', __('Id'));
+        // $show->field('title', __('Title'));
+        // $show->field('author', __('Author'));
+        // $show->field('author_address', __('Author address'));
+        // $show->field('ISBN', __('ISBN'));
+        // $show->field('is_published', __('Is published'));
+        // $show->field('created_at', __('Created at'));
+        // $show->field('updated_at', __('Updated at'));
 
-        return $show;
+        // return $show;
+
+        return Admin::content(function (Content $content) use ($id) {
+
+            $content->header('Book');
+            $content->description('Detail');
+
+            $content->body(Admin::show(Book::findOrFail($id), function (Show $show) {
+                $show->panel()
+                    ->style('danger')
+                    ->title('Book detail...');
+                // $show->panel()
+                // ->tools(function ($tools) {
+                //     $tools->disableEdit();
+                //     $tools->disableList();
+                //     $tools->disableDelete();
+                // });;
+                $show->field('id', 'ID');
+                $show->field('title', 'Title');
+                // $show->title()->as(function ($title) {
+                //     return "<{$title}>";
+                // });
+                // $show->title()->as(function ($title) {
+                //     return "<pre>{$title}</pre>";
+                // });
+                //$show->title()->label();
+                //$show->title()->badge();
+                $show->field('author');
+                $show->author_gender()->using(['f' => 'Female', 'm' => 'Male']);
+                $show->field('author_address');
+                $show->field('ISBN');
+                $show->field('is_published');
+                $show->field('updated_at');
+                $show->field('release_at');
+
+
+            }));
+            // $content->body(Admin::show(Book::findOrFail($id)));
+            // $content->body(Admin::show(Book::findOrFail($id), [
+            //     'id'        => 'ID',
+            //     'title'     => 'Title',
+            //     'author'   => 'Author'
+            // ]));
+        });
     }
 
 
@@ -133,6 +244,7 @@ class BookController extends AdminController
         //$form->currency('author','Author')->symbol('$');
         //$form->timezone('author');
         $form->textarea('author_address', __('Author address'))->rows(10);
+        $form->text('author_gender');
         //$form->number('ISBN', __('ISBN'));
         $form->hidden('ISBN');
         //$form->number('ISBN','ISBN')->max(100);
