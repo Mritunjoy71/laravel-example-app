@@ -28,3 +28,18 @@ Column::extend('color', function ($value, $color) {
 
 use App\Admin\Extensions\Popover;
 Column::extend('popover', Popover::class);
+
+use App\Admin\Extensions\PHPEditor;
+use Encore\Admin\Form;
+
+Form::extend('php', PHPEditor::class);
+
+use App\Admin\Extensions\Form\CKEditor;
+
+Form::extend('ckeditor', CKEditor::class);
+
+
+use Encore\Admin\Show;
+use App\Admin\Extensions\Show\UnSerialize;
+
+Show::extend('unserialize', UnSerialize::class);

@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProjectSeeder::class,
             ProfileSeeder::class,
+            AroleSeeder::class,
+            AuserSeeder::class,
+            TaskSeeder::class,
         ]);
     }
 }

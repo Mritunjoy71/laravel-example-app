@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Route; 
+use App\Http\Controllers\Apis; 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +17,25 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::get('/first-api',[Apis::class,'firstApi']); 
+
+Route::get('/second-api/{id}',[Apis::class,'secondApi']); 
+
+Route::post('/post-api',[Apis::class,'postApi']); 
+
+Route::get('/taskList',[Apis::class,'getTaskList']); 
+
+Route::get('/singleTask/{id}',[Apis::class,'getSingleTaskList']); 
+
+//// PASSPORT //////
+
+
+Route::post('/register',[Apis::class,'register']); 
+
+Route::post('/login',[Apis::class,'login']);
+
+Route::get('/login',[Apis::class,'login'])->name('login');
+
+Route::middleware('auth:api')->get('/details',[Apis::class,'getTaskList'] );

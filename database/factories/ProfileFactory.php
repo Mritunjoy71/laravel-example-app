@@ -22,14 +22,18 @@ class ProfileFactory extends Factory
     public function definition()
     {
         return [
-            'user_name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
-            'avatar'=>$this->faker->name,
-            'address'=>$this->faker->address,
-            'phone'=>$this->faker->numberBetween(8801700000000,8801799999999),
-            'company'=>$this->faker->company,
-            'start_date'=>$this->faker->date,
-            'end_date'=>$this->faker->date,
+            'user_id'=>rand(1,50),
+            'age'=>rand(20,50),
+            'gender'=>$this->faker->name,
+            // 'user_name' => $this->faker->name,
+            // 'email' => $this->faker->unique()->safeEmail,
+            // 'avatar'=>$this->faker->image,
+            // 'address'=>$this->faker->address,
+            // 'phone'=>$this->faker->numberBetween(8801700000000,8801799999999),
+            // 'company'=>$this->faker->company,
+            // 'file'=>$this->faker->name,
+            // 'start_date'=>$this->faker->date,
+            // 'end_date'=>$this->faker->date,
         ];
     }
 }

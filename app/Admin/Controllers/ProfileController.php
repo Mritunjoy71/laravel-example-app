@@ -27,14 +27,9 @@ class ProfileController extends AdminController
         $grid = new Grid(new Profile());
 
         $grid->column('id', __('Id'));
-        $grid->column('user_name', __('User name'));
-        $grid->column('email', __('Email'));
-        $grid->column('avatar', __('Avatar'));
-        $grid->column('address', __('Address'));
-        $grid->column('phone', __('Phone'));
-        $grid->column('company', __('Company'));
-        $grid->column('start_date', __('Start date'));
-        $grid->column('end_date', __('End date'));
+        $grid->column('user_id', __('User id'));
+        $grid->column('age', __('Age'));
+        $grid->column('gender', __('Gender'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 
@@ -52,14 +47,9 @@ class ProfileController extends AdminController
         $show = new Show(Profile::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('user_name', __('User name'));
-        $show->field('email', __('Email'));
-        $show->field('avatar', __('Avatar'));
-        $show->field('address', __('Address'));
-        $show->field('phone', __('Phone'));
-        $show->field('company', __('Company'));
-        $show->field('start_date', __('Start date'));
-        $show->field('end_date', __('End date'));
+        $show->field('user_id', __('User id'));
+        $show->field('age', __('Age'));
+        $show->field('gender', __('Gender'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
 
@@ -75,27 +65,13 @@ class ProfileController extends AdminController
     {
         $form = new Form(new Profile());
 
-        $form->tab('Basic info', function ($form) {
+        $form->number('user_id', __('User id'));
+        $form->number('age', __('Age'));
+        $form->text('gender', __('Gender'));
 
-            $form->text('user_name');
-            $form->email('email');
-        
-        })->tab('Profile', function ($form) {
-        
-           $form->image('avatar');
-           $form->text('address');
-           $form->mobile('phone');
-        
-        })->tab('Jobs', function ($form) {
-        
-            
-            $form->text('company');
-            $form->date('start_date');
-            $form->date('end_date');
-            
-        
-          });
-
+        $form->text('user.name');
+        $form->text('user.email');
+        $form->text('user.role_id');
         return $form;
     }
 }

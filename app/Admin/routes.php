@@ -16,5 +16,11 @@ Route::group([
     $router->resource('movies', MovieController::class);
     $router->resource('books', BookController::class);
     $router->resource('profiles', ProfileController::class);
-
+    $router->resource('articles', ArticleController::class);
+    $router->resource('users', UserController::class);
+    $router->resource('painters', PainterController::class);
+    $router->resource('aroles', AroleController::class);
+    $router->resource('ausers', AuserController::class);
+    $router->resource('paintings', PaintingController::class);
+    $router->resource('attachments', AttachmentController::class);
 });
